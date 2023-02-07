@@ -1,7 +1,21 @@
 micronaut:
   application:
     name: testApi
+datasources:
+  default:
+    driver-class-name: org.mariadb.jdbc.Driver
+    db-type: mariadb
+    dialect: MYSQL
+    jdbc-url: jdbc:mariadb://localhost:3308/pokemon
+    username: root
+    password: root
 netty:
   default:
     allocator:
       max-order: 3
+jpa:
+  default:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
