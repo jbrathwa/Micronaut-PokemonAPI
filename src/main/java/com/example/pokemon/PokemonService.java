@@ -1,13 +1,16 @@
 package com.example.pokemon;
 
 import com.example.exception.PokemonValidationException;
+import com.example.power.Power;
+import com.example.power.PowerService;
+
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Singleton
 public class PokemonService {
@@ -16,15 +19,19 @@ public class PokemonService {
 
   private final PokemonRepository pokemonRepository;
 
-  public PokemonService(PokemonRepository pokemonRepository) {
+  private final PowerService powerService;
+
+  public PokemonService(PokemonRepository pokemonRepository, PowerService powerService) {
 
     this.pokemonRepository = pokemonRepository;
+    this.powerService = powerService;
   }
 
   public List<Pokemon> get() {
     return (List<Pokemon>) pokemonRepository.findAll();
   }
 
+  @Transactional
   public Pokemon create(PokemonCreationForm pokemonForm) {
     boolean isPokemonExist = pokemonRepository.existsByNameIgnoreCase(pokemonForm.getName());
     if (isPokemonExist) {
@@ -32,10 +39,13 @@ public class PokemonService {
           "Pokemon With name: " + pokemonForm.getName() + " Already Exist");
     }
 
+    Power power=powerService.get(pokemonForm.getPowerId());
     Pokemon pokemon = new Pokemon();
     pokemon.setName(pokemonForm.getName());
-    pokemon.setPower(pokemonForm.getPower());
+    pokemon.setPower(power);
     pokemonRepository.save(pokemon);
+    pokemon.setImageUrl("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/"+pokemon.getId()+".png");
+
     return pokemon;
   }
 

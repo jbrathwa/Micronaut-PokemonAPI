@@ -1,30 +1,34 @@
 package com.example.pokemon;
 
+import com.example.power.Power;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "pokemon")
 public class Pokemon {
 
-  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer id;
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private java.lang.Integer id;
   private String name;
-  private String power;
+  @ManyToOne
+  @JoinColumn(referencedColumnName = "id",name="power")
+  private Power power;
   private String imageUrl;
 
   public Pokemon() {}
 
-  public Pokemon(Integer id, String name, String power, String imageUrl) {
+  public Pokemon(java.lang.Integer id, String name, Power power, String imageUrl) {
     this.id = id;
     this.name = name;
     this.power = power;
     this.imageUrl = imageUrl;
   }
 
-  public Integer getId() {
+  public java.lang.Integer getId() {
     return id;
   }
 
-  public void setId(Integer id) {
+  public void setId(java.lang.Integer id) {
     this.id = id;
   }
 
@@ -36,11 +40,11 @@ public class Pokemon {
     this.name = name;
   }
 
-  public String getPower() {
+  public Power getPower() {
     return power;
   }
 
-  public void setPower(String power) {
+  public void setPower(Power power) {
     this.power = power;
   }
 
