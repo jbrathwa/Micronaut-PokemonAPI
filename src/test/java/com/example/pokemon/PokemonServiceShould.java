@@ -1,5 +1,6 @@
 package com.example.pokemon;
 
+import com.example.exception.PokemonValidationException;
 import com.example.power.Power;
 import com.example.power.PowerRepository;
 import com.example.power.PowerService;
@@ -12,7 +13,6 @@ import org.mockito.Mockito;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -129,8 +129,47 @@ class PokemonServiceShould {
   }
 
   @Test
-  @DisplayName("Test Pokemonname Already exists")
-  void pokemonWithNameExistsException(){
+  @DisplayName("Test Pokemon-name Already exists")
+  void pokemonWithNameExistsException() {
     Mockito.when(pokemonRepository.existsByNameIgnoreCase(anyString())).thenReturn(true);
+
+    Assertions.assertThatThrownBy(() -> pokemonService.create(pokemonCreationForm));
+    Assertions.catchThrowableOfType(
+        () -> pokemonService.create(pokemonCreationForm), PokemonValidationException.class);
+  }
+
+  @Test
+  @DisplayName("Test Pokemon-Id could not find")
+  void pokemonIdNotFoundException() {
+
+    Mockito.when(pokemonRepository.findById(anyInt()))
+        .thenReturn(Optional.empty());
+
+    Assertions.assertThatThrownBy(() -> pokemonService.update(pokemon2));
+
+    Assertions.catchThrowableOfType(
+        () -> pokemonService.update(pokemon2), PokemonValidationException.class);
+  }
+
+  @Test
+  @DisplayName("Test Pokemon-name Already found")
+  void pokemonNameAlreadyFound() {
+    Mockito.when(pokemonRepository.findByNameIgnoreCase(anyString()))
+        .thenReturn(Optional.ofNullable(pokemon2));
+
+    Assertions.assertThatThrownBy(() -> pokemonService.update(pokemon2));
+
+    Assertions.catchThrowableOfType(
+        () -> pokemonService.update(pokemon2), PokemonValidationException.class);
+  }
+
+  @Test
+  @DisplayName("Test Pokemon-Id does not exist ")
+  void pokemonIdNotExists(){
+    Mockito.when(pokemonRepository.existsById(anyInt())).thenReturn(false);
+
+    Assertions.assertThatThrownBy(()->pokemonService.delete(anyInt()));
+
+    Assertions.catchThrowableOfType(()->pokemonService.delete(anyInt()),PokemonValidationException.class);
   }
 }
