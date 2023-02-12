@@ -26,15 +26,13 @@ public class PokemonController {
 
   @Post
   public HttpResponse<Pokemon> create(@Body PokemonCreationForm pokemonForm) {
-
     return HttpResponse.created(pokemonService.create(pokemonForm));
   }
 
   @Put
   public HttpResponse<Pokemon> update(@Body Pokemon pokemon) {
 
-    pokemonService.update(pokemon);
-    return HttpResponse.ok();
+    return HttpResponse.created(pokemonService.update(pokemon));
   }
 
   @Delete("/{id}")

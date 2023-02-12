@@ -39,14 +39,17 @@ public class PokemonService {
           "Pokemon With name: " + pokemonForm.getName() + " Already Exist");
     }
 
-    Power power=powerService.get(pokemonForm.getPowerId());
+    Power power = powerService.get(pokemonForm.getPower());
     Pokemon pokemon = new Pokemon();
     pokemon.setName(pokemonForm.getName());
     pokemon.setPower(power);
-    pokemonRepository.save(pokemon);
-    pokemon.setImageUrl("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/"+pokemon.getId()+".png");
+   Pokemon updatedPokemon = pokemonRepository.save(pokemon);
+    pokemon.setImageUrl(
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/"
+            + pokemon.getId()
+            + ".png");
 
-    return pokemon;
+    return updatedPokemon;
   }
 
   public Pokemon getById(Integer id) {
@@ -55,17 +58,27 @@ public class PokemonService {
         .orElseThrow(() -> new PokemonValidationException("Pokemon with id: " + id + " Not found"));
   }
 
-  public void update(Pokemon pokemon) {
-    Pokemon pokemonWithId = pokemonRepository.findById(pokemon.getId()).orElseThrow(()->new PokemonValidationException("Pokemon With id: " + pokemon.getId() + " Not exist"));
+  public Pokemon update(Pokemon pokemon) {
+    Pokemon pokemonWithId =
+        pokemonRepository
+            .findById(pokemon.getId())
+            .orElseThrow(
+                () ->
+                    new PokemonValidationException(
+                        "Pokemon With id: " + pokemon.getId() + " Not exist"));
 
-    Pokemon pokemanWithNameExist = pokemonRepository.findByNameIgnoreCase(pokemon.getName()).orElse(pokemonRepository.update(pokemon));
-    if(!Objects.equals(pokemanWithNameExist.getId(), pokemonWithId.getId())){
-      throw new PokemonValidationException("Pokemon with name: " +pokemon.getName() +" Already exist");
+    Pokemon pokemonWithNameExist =
+        pokemonRepository
+            .findByNameIgnoreCase(pokemon.getName())
+            .orElse(null);
+    if (pokemonWithNameExist!=null && !Objects.equals(pokemonWithNameExist.getId(), pokemonWithId.getId())) {
+      throw new PokemonValidationException(
+              "Pokemon with name: " + pokemon.getName() + " Already exist");
+    } else {
+
+      pokemonRepository.update(pokemon);
     }
-    pokemonRepository.update(pokemon);
-
-
-
+    return pokemon;
   }
 
   public void delete(Integer id) {

@@ -1,6 +1,5 @@
 package com.example.power;
 
-import com.example.exception.PokemonValidationException;
 import jakarta.inject.Singleton;
 
 @Singleton
@@ -14,7 +13,7 @@ public class PowerService {
     }
 
 
-    public Power get(Long id){
-        return powerRepository.findById(id).orElseThrow(()-> new PokemonValidationException("Power does not exists"));
+    public Power get(String name){
+        return powerRepository.findByName(name);
     }
 }

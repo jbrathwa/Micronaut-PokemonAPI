@@ -7,20 +7,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class PokemonCreationForm {
   private final String name;
 
-  private final Long powerId;
+  private final String power;
 
   @JsonCreator
   public PokemonCreationForm(
-      @JsonProperty("name") String name, @JsonProperty("powerId") Long powerId) {
+      @JsonProperty("name") String name, @JsonProperty("power") String power) {
     this.name = name;
-    this.powerId = powerId;
+    this.power = power;
   }
 
   public String getName() {
     return name;
   }
 
-  public Long getPowerId() {
-    return powerId;
+  public String getPower() {
+    return power;
   }
 }
