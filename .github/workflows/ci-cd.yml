@@ -12,7 +12,9 @@ jobs:
         with:
           java-version: '11'
           distribution: 'corretto'
-      - name: Test and Build with Gradle
+      - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
+      - name: Give gradle executable permission
+        run: chmod +x ./gradlew
+      - name: Run gradle build
+        run: ./gradlew build
