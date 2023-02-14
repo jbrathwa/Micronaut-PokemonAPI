@@ -18,3 +18,8 @@ jobs:
         run: chmod +x ./gradlew
       - name: Run gradle build
         run: ./gradlew build
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-jar
+          path: build/libs/*-all.jar
