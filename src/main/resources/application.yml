@@ -2,8 +2,9 @@ micronaut:
   application:
     name: testApi
   server:
-      cors:
-          enabled: true
+    port: 5000
+    cors:
+      enabled: true
 datasources:
   default:
     driver-class-name: ${DATASOURCES_DEFAULT_DRIVER:org.mariadb.jdbc.Driver }
