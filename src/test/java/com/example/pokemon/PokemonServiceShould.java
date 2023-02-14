@@ -23,8 +23,8 @@ class PokemonServiceShould {
   PowerService powerService;
   PokemonService pokemonService;
   Power power;
-  Pokemon pokemon1;
-  Pokemon pokemon2;
+  Pokemon pikachuPokemon;
+  Pokemon bulbasaurPokemon;
 
   List<Pokemon> pokemons;
 
@@ -35,14 +35,14 @@ class PokemonServiceShould {
 
     power = new Power(1L, "fire");
 
-    pokemon1 = new Pokemon(1, "Pikachu", power, "Pikachu.png");
+    pikachuPokemon = new Pokemon(1, "Pikachu", power, "Pikachu.png");
 
-    pokemon2 = new Pokemon(2, "Bulbasaur", power, "Bulbasaur.png");
+    bulbasaurPokemon = new Pokemon(2, "Bulbasaur", power, "Bulbasaur.png");
 
-    pokemons = List.of(pokemon1, pokemon2);
+    pokemons = List.of(pikachuPokemon, bulbasaurPokemon);
 
     pokemonCreationForm =
-        new PokemonCreationForm(pokemon1.getName(), pokemon1.getPower().getName());
+        new PokemonCreationForm(pikachuPokemon.getName(), pikachuPokemon.getPower().getName());
 
     pokemonRepository = Mockito.mock(PokemonRepository.class);
 
@@ -74,7 +74,7 @@ class PokemonServiceShould {
 
     Mockito.when(pokemonRepository.existsByNameIgnoreCase(anyString())).thenReturn(false);
 
-    Mockito.when(pokemonRepository.save(Mockito.any())).thenReturn(pokemon1);
+    Mockito.when(pokemonRepository.save(Mockito.any())).thenReturn(pikachuPokemon);
 
     Pokemon returnedPokemon = pokemonService.create(pokemonCreationForm);
 
@@ -82,39 +82,39 @@ class PokemonServiceShould {
     Mockito.verify(powerRepository).findByName(anyString());
     Mockito.verify(pokemonRepository).existsByNameIgnoreCase(anyString());
 
-    Assertions.assertThat(returnedPokemon).isEqualTo(pokemon1);
+    Assertions.assertThat(returnedPokemon).isEqualTo(pikachuPokemon);
   }
 
   @Test
   @DisplayName("Test Get Pokemon By Id")
   void getById() {
-    Mockito.when(pokemonRepository.findById(anyInt())).thenReturn(Optional.ofNullable(pokemon1));
+    Mockito.when(pokemonRepository.findById(anyInt())).thenReturn(Optional.ofNullable(pikachuPokemon));
 
     Pokemon returnedPokemon = pokemonService.getById(1);
 
     Mockito.verify(pokemonRepository).findById(anyInt());
 
-    Assertions.assertThat(returnedPokemon).isEqualTo(pokemon1);
+    Assertions.assertThat(returnedPokemon).isEqualTo(pikachuPokemon);
   }
 
   @Test
   @DisplayName("Test Update Pokemon")
   void update() {
 
-    Mockito.when(pokemonRepository.findById(anyInt())).thenReturn(Optional.ofNullable(pokemon2));
+    Mockito.when(pokemonRepository.findById(anyInt())).thenReturn(Optional.ofNullable(bulbasaurPokemon));
 
     Mockito.when(pokemonRepository.findByNameIgnoreCase(anyString()))
-        .thenReturn(Optional.ofNullable(pokemon2));
+        .thenReturn(Optional.ofNullable(bulbasaurPokemon));
 
-    Mockito.when(pokemonRepository.update(Mockito.any())).thenReturn(pokemon2);
+    Mockito.when(pokemonRepository.update(Mockito.any())).thenReturn(bulbasaurPokemon);
 
-    Pokemon updatedPokemon = pokemonService.update(pokemon2);
+    Pokemon updatedPokemon = pokemonService.update(bulbasaurPokemon);
 
     Mockito.verify(pokemonRepository).update(Mockito.any());
     Mockito.verify(pokemonRepository).findById(anyInt());
     Mockito.verify(pokemonRepository).findByNameIgnoreCase(anyString());
 
-    Assertions.assertThat(updatedPokemon).isEqualTo(pokemon2);
+    Assertions.assertThat(updatedPokemon).isEqualTo(bulbasaurPokemon);
   }
 
   @Test
@@ -139,37 +139,69 @@ class PokemonServiceShould {
   }
 
   @Test
-  @DisplayName("Test Pokemon-Id could not find")
+  @DisplayName("Test Pokemon-Id could not find in update")
   void pokemonIdNotFoundException() {
 
-    Mockito.when(pokemonRepository.findById(anyInt()))
-        .thenReturn(Optional.empty());
+    Mockito.when(pokemonRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-    Assertions.assertThatThrownBy(() -> pokemonService.update(pokemon2));
+    Assertions.assertThatThrownBy(() -> pokemonService.update(bulbasaurPokemon));
 
     Assertions.catchThrowableOfType(
-        () -> pokemonService.update(pokemon2), PokemonValidationException.class);
+        () -> pokemonService.update(bulbasaurPokemon), PokemonValidationException.class);
   }
 
   @Test
   @DisplayName("Test Pokemon-name Already found")
   void pokemonNameAlreadyFound() {
-    Mockito.when(pokemonRepository.findByNameIgnoreCase(anyString()))
-        .thenReturn(Optional.ofNullable(pokemon2));
+    Mockito.when(pokemonRepository.findById(anyInt())).thenReturn(Optional.ofNullable(bulbasaurPokemon));
 
-    Assertions.assertThatThrownBy(() -> pokemonService.update(pokemon2));
+    Mockito.when(pokemonRepository.findByNameIgnoreCase(anyString()))
+        .thenReturn(Optional.ofNullable(pikachuPokemon));
+
+    Assertions.assertThatThrownBy(() -> pokemonService.update(bulbasaurPokemon));
 
     Assertions.catchThrowableOfType(
-        () -> pokemonService.update(pokemon2), PokemonValidationException.class);
+        () -> pokemonService.update(bulbasaurPokemon), PokemonValidationException.class);
   }
 
   @Test
   @DisplayName("Test Pokemon-Id does not exist ")
-  void pokemonIdNotExists(){
+  void pokemonIdNotExists() {
     Mockito.when(pokemonRepository.existsById(anyInt())).thenReturn(false);
 
-    Assertions.assertThatThrownBy(()->pokemonService.delete(anyInt()));
+    Assertions.assertThatThrownBy(() -> pokemonService.delete(anyInt()));
 
-    Assertions.catchThrowableOfType(()->pokemonService.delete(anyInt()),PokemonValidationException.class);
+    Assertions.catchThrowableOfType(
+        () -> pokemonService.delete(anyInt()), PokemonValidationException.class);
+  }
+
+  @Test
+  @DisplayName("Test Update Pokemon-power ")
+  void pokemonPowerUpdate() {
+    Mockito.when(pokemonRepository.findById(anyInt())).thenReturn(Optional.ofNullable(bulbasaurPokemon));
+
+    Mockito.when(pokemonRepository.findByNameIgnoreCase(anyString())).thenReturn(Optional.empty());
+
+    Mockito.when(pokemonRepository.update(Mockito.any())).thenReturn(bulbasaurPokemon);
+
+    Pokemon updatedPokemon = pokemonService.update(bulbasaurPokemon);
+
+    Mockito.verify(pokemonRepository).update(Mockito.any());
+    Mockito.verify(pokemonRepository).findById(anyInt());
+    Mockito.verify(pokemonRepository).findByNameIgnoreCase(anyString());
+
+    Assertions.assertThat(updatedPokemon).isEqualTo(bulbasaurPokemon);
+  }
+
+  @Test
+  @DisplayName("Test Pokemon-Id does not found in getById")
+  void pokemonIdNotFound() {
+    Mockito.when(pokemonRepository.findById(anyInt()))
+            .thenReturn(Optional.empty());
+
+    Assertions.assertThatThrownBy(() -> pokemonService.getById(anyInt()));
+
+    Assertions.catchThrowableOfType(
+        () -> pokemonService.getById(anyInt()), PokemonValidationException.class);
   }
 }

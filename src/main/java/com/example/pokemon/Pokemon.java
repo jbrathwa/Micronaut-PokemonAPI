@@ -28,10 +28,6 @@ public class Pokemon {
     return id;
   }
 
-  public void setId(java.lang.Integer id) {
-    this.id = id;
-  }
-
   public String getName() {
     return name;
   }
