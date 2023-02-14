@@ -23,3 +23,13 @@ jobs:
         with:
           name: app-jar
           path: build/libs/*-all.jar
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: app-jar
+      - name: List Directory
+        run: ls
